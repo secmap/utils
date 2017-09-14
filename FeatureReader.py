@@ -5,7 +5,7 @@
 #
 #==========================================================
 #from utils.FeatureReader import FeatureReader as fr
-#traindata , trainlabel, testdata, testlabel  = fr(range(8)).read("features")
+#traindata , trainlabel, testdata, testlabel  = fr(range(8), "features").read()
 #print(traindata)
 #
 import numpy as np
@@ -34,7 +34,7 @@ class Dataset():
             print(e)
 
 class FeatureReader():
-    def __init__(self, choose):
+    def __init__(self, choose, dir_name):
         self.features = ['api_bin.npz',
                         'bytes_1_gram.npz',
                         'bytes_2_gram.npz',
@@ -52,11 +52,13 @@ class FeatureReader():
                 print('index should be less than', len(self.features))
                 return None
         self.choose = choose
+        self.dir_name = dir_name
         self.datasets = []
         self.con_traindata = None
         self.con_trainlabel = None
         self.con_testdata = None
         self.con_testlabel = None
+        self._read(dir_name)
 
     def index(self):
         for i in range(len(self.features)):
@@ -72,14 +74,10 @@ class FeatureReader():
             for i in self.datasets[1:]:
                 self.con_traindata = np.concatenate(
                     (self.con_traindata, i.traindata), axis=1)
-                self.con_trainlabel = np.concatenate(
-                    (self.con_trainlabel, i.trainlabel), axis=1)
                 self.con_testdata = np.concatenate(
                     (self.con_testdata, i.testdata),axis=1)
-                self.con_testlabel = np.concatenate(
-                    (self.con_testlabel, i.testlabel), axis=1)
 
-    def read(self, dir_name):
+    def _read(self, dir_name):
         for c in self.choose:
             tf_name = dir_name+'/'+self.features[c]
             print("handling {}".format(tf_name))
@@ -87,4 +85,6 @@ class FeatureReader():
             d.read(tf_name)
             self.datasets.append(d)
         self.concatenate()
+
+    def read(self):
         return self.con_traindata, self.con_trainlabel, self.con_testdata, self.con_testlabel
