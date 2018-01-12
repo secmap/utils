@@ -11,14 +11,9 @@ def usage():
 def last_section(section):
     return section.next_section_virtual_address is None
 
-
-def main():
-    if len(sys.argv) != 3:
-        usage()
-        sys.exit(-1)
-    
-    outfile = open(sys.argv[2], 'w')
-    pe = pefile.PE(sys.argv[1])
+def bin2bytes(sourcefile, targetfile):
+    outfile = open(targetfile, 'w')
+    pe = pefile.PE(sourcefile)
     
     sections = pe.sections
     for i in range(len(sections)):
@@ -46,6 +41,14 @@ def main():
             cur += 1
     
     outfile.close()
+    
+
+def main():
+    if len(sys.argv) != 3:
+        usage()
+        sys.exit(-1)
+    bin2bytes(sys.argv[1], sys.argv[2])
+    
 
 if __name__ == '__main__':
     main()
